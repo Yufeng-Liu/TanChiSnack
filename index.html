@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐍 顶级贪吃蛇</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 主菜单 -->
+        <div id="main-menu" class="screen active">
+            <div class="menu-container">
+                <h1 class="game-title">🐍 贪吃蛇</h1>
+                <p class="subtitle">经典 · 创新 · 极致体验</p>
+                <div class="menu-buttons">
+                    <button class="menu-btn primary" id="btn-classic">🎮 经典模式</button>
+                    <button class="menu-btn" id="btn-timed">⏱️ 限时挑战</button>
+                    <button class="menu-btn" id="btn-multiplayer">👥 双人对战</button>
+                </div>
+                <div class="menu-secondary">
+                    <button class="icon-btn" id="btn-infinite" title="无限模式">♾️</button>
+                    <button class="icon-btn" id="btn-skins" title="皮肤商店">🎨</button>
+                    <button class="icon-btn" id="btn-achievements" title="成就">🏆</button>
+                    <button class="icon-btn" id="btn-settings" title="设置">⚙️</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 难度选择 -->
+        <div id="difficulty-screen" class="screen">
+            <div class="panel">
+                <h2>选择难度</h2>
+                <div class="difficulty-grid">
+                    <button class="diff-btn" data-diff="easy">
+                        <span class="diff-icon">🌱</span>
+                        <span class="diff-name">新手</span>
+                        <span class="diff-desc">开阔地图，无障碍物</span>
+                    </button>
+                    <button class="diff-btn" data-diff="normal">
+                        <span class="diff-icon">⚔️</span>
+                        <span class="diff-name">普通</span>
+                        <span class="diff-desc">固定障碍物</span>
+                    </button>
+                    <button class="diff-btn" data-diff="hard">
+                        <span class="diff-icon">🔥</span>
+                        <span class="diff-name">困难</span>
+                        <span class="diff-desc">移动障碍物</span>
+                    </button>
+                    <button class="diff-btn" data-diff="master">
+                        <span class="diff-icon">💀</span>
+                        <span class="diff-name">大师</span>
+                        <span class="diff-desc">随机密集障碍</span>
+                    </button>
+                </div>
+                <button class="back-btn" id="back-from-diff">← 返回</button>
+            </div>
+        </div>
+
+        <!-- 限时模式选择 -->
+        <div id="timed-screen" class="screen">
+            <div class="panel">
+                <h2>⏱️ 限时挑战</h2>
+                <div class="difficulty-grid">
+                    <button class="diff-btn timed-btn" data-time="60">
+                        <span class="diff-icon">⚡</span>
+                        <span class="diff-name">1分钟</span>
+                        <span class="diff-desc">极速挑战</span>
+                    </button>
+                    <button class="diff-btn timed-btn" data-time="180">
+                        <span class="diff-icon">🎯</span>
+                        <span class="diff-name">3分钟</span>
+                        <span class="diff-desc">策略挑战</span>
+                    </button>
+                </div>
+                <button class="back-btn" id="back-from-timed">← 返回</button>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="game-screen" class="screen">
+            <div id="game-header">
+                <div class="header-left" id="single-hud">
+                    <span id="score-display">得分: <strong>0</strong></span>
+                    <span id="length-display">长度: <strong>3</strong></span>
+                </div>
+                <div class="header-left hidden" id="multi-hud">
+                    <span class="hud-p1"><span class="p1-dot"></span>P1 得分:<strong id="p1-score">0</strong> 长度:<strong id="p1-length">3</strong></span>
+                    <span class="hud-p2"><span class="p2-dot"></span>P2 得分:<strong id="p2-score">0</strong> 长度:<strong id="p2-length">3</strong></span>
+                </div>
+                <div class="header-center">
+                    <span id="combo-display" class="hidden">连击 x<strong>1</strong></span>
+                    <span id="effect-display" class="hidden"></span>
+                </div>
+                <div class="header-right">
+                    <span id="timer-display" class="hidden">⏱️ <strong>60</strong>s</span>
+                    <span id="highscore-display">最高: <strong>0</strong></span>
+                </div>
+            </div>
+            <canvas id="game-canvas"></canvas>
+            <div id="mobile-controls">
+                <div class="ctrl-group" id="p1-controls">
+                    <span class="player-label p1-label">P1 WASD</span>
+                    <button class="ctrl-btn" data-dir="up" data-player="0">▲</button>
+                    <div class="ctrl-row">
+                        <button class="ctrl-btn" data-dir="left" data-player="0">◄</button>
+                        <button class="ctrl-btn" data-dir="down" data-player="0">▼</button>
+                        <button class="ctrl-btn" data-dir="right" data-player="0">►</button>
+                    </div>
+                </div>
+                <div class="ctrl-group hidden" id="p2-controls">
+                    <span class="player-label p2-label">P2 方向键</span>
+                    <button class="ctrl-btn ctrl-btn-p2" data-dir="up" data-player="1">▲</button>
+                    <div class="ctrl-row">
+                        <button class="ctrl-btn ctrl-btn-p2" data-dir="left" data-player="1">◄</button>
+                        <button class="ctrl-btn ctrl-btn-p2" data-dir="down" data-player="1">▼</button>
+                        <button class="ctrl-btn ctrl-btn-p2" data-dir="right" data-player="1">►</button>
+                    </div>
+                </div>
+            </div>
+            <button class="pause-btn" id="btn-pause">⏸️ 暂停</button>
+        </div>
+
+        <!-- 暂停菜单 -->
+        <div id="pause-overlay" class="overlay hidden">
+            <div class="panel pause-panel">
+                <h2>⏸️ 游戏暂停</h2>
+                <button class="menu-btn primary" id="btn-resume">▶️ 继续游戏</button>
+                <button class="menu-btn" id="btn-restart">🔄 重新开始</button>
+                <button class="menu-btn" id="btn-quit-menu">🏠 返回主菜单</button>
+            </div>
+        </div>
+
+        <!-- 游戏结束 -->
+        <div id="gameover-overlay" class="overlay hidden">
+            <div class="panel gameover-panel">
+                <h2 id="gameover-title">游戏结束</h2>
+                <div class="stats-grid">
+                    <div class="stat-item"><span class="stat-label">最终得分</span><span class="stat-value" id="go-score">0</span></div>
+                    <div class="stat-item"><span class="stat-label">蛇身最长</span><span class="stat-value" id="go-length">3</span></div>
+                    <div class="stat-item"><span class="stat-label">最大连击</span><span class="stat-value" id="go-combo">0</span></div>
+                    <div class="stat-item"><span class="stat-label">吞噬食物</span><span class="stat-value" id="go-foods">0</span></div>
+                    <div class="stat-item"><span class="stat-label">存活时间</span><span class="stat-value" id="go-time">0s</span></div>
+                </div>
+                <div id="new-achievements" class="hidden"></div>
+                <div class="gameover-buttons">
+                    <button class="menu-btn primary" id="btn-playagain">🔄 再来一局</button>
+                    <button class="menu-btn" id="btn-back-menu">🏠 返回主菜单</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 皮肤商店 -->
+        <div id="skins-screen" class="screen">
+            <div class="panel full-panel">
+                <h2>🎨 皮肤商店</h2>
+                <div id="skins-grid" class="skins-grid"></div>
+                <button class="back-btn" id="back-from-skins">← 返回</button>
+            </div>
+        </div>
+
+        <!-- 成就系统 -->
+        <div id="achievements-screen" class="screen">
+            <div class="panel full-panel">
+                <h2>🏆 成就殿堂</h2>
+                <div id="achievements-list" class="achievements-list"></div>
+                <button class="back-btn" id="back-from-achieve">← 返回</button>
+            </div>
+        </div>
+
+        <!-- 设置界面 -->
+        <div id="settings-screen" class="screen">
+            <div class="panel settings-panel">
+                <h2>⚙️ 设置</h2>
+                <div class="setting-item">
+                    <label>背景音乐</label>
+                    <input type="range" id="bgm-volume" min="0" max="100" value="50">
+                    <span id="bgm-vol-val">50%</span>
+                </div>
+                <div class="setting-item">
+                    <label>音效音量</label>
+                    <input type="range" id="sfx-volume" min="0" max="100" value="70">
+                    <span id="sfx-vol-val">70%</span>
+                </div>
+                <div class="setting-item">
+                    <label>地图主题</label>
+                    <select id="map-theme">
+                        <option value="starfield">星空</option>
+                        <option value="forest">森林</option>
+                        <option value="city">城市</option>
+                        <option value="pixel">复古像素</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>操作方式(移动端)</label>
+                    <select id="control-mode">
+                        <option value="swipe">滑动屏幕</option>
+                        <option value="buttons">虚拟方向键</option>
+                    </select>
+                </div>
+                <div class="setting-item toggle-item">
+                    <label>显示残影效果</label>
+                    <input type="checkbox" id="trail-toggle" checked>
+                </div>
+                <div class="setting-item toggle-item">
+                    <label>显示粒子特效</label>
+                    <input type="checkbox" id="particle-toggle" checked>
+                </div>
+                <button class="back-btn" id="back-from-settings">← 返回</button>
+            </div>
+        </div>
+
+        <!-- 新手引导 -->
+        <div id="tutorial-overlay" class="overlay hidden">
+            <div class="tutorial-panel">
+                <div id="tutorial-step" class="tutorial-step">
+                    <h3 id="tut-title">欢迎来到贪吃蛇！</h3>
+                    <p id="tut-text">使用方向键或WASD控制蛇的移动方向，吃掉食物让蛇变长！</p>
+                    <canvas id="tutorial-canvas" width="300" height="200"></canvas>
+                </div>
+                <div class="tutorial-nav">
+                    <button class="menu-btn" id="tut-prev" disabled>上一步</button>
+                    <span id="tut-progress">1/4</span>
+                    <button class="menu-btn primary" id="tut-next">下一步</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 特效食物提示浮窗 -->
+        <div id="food-toast" class="toast hidden">
+            <span id="toast-icon"></span>
+            <span id="toast-text"></span>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
